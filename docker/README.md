@@ -38,7 +38,7 @@ docker run -d --name hello-world-php -p 8080:80 hello-world-php
 
 Der Nun kann die Webseite aufgerufen werden!
 
-![A screenshot of the Browser](https://raw.githubusercontent.com/Muxelmann/tutorials/docker/hello-world-php/_screenshot.png)
+![A screenshot of the Browser](https://github.com/Muxelmann/tutorials/raw/main/docker/hello-world-php/_screenshot.png)
 
 Der Docker-Container wird wie folgt beendet, sodass der Port 8080 wieder freigegeben wird:
 
@@ -67,7 +67,7 @@ docker run -d --name hello-world-node -p 8080:80 hello-world-node
 
 Der Nun kann die Webseite aufgerufen werden!
 
-![A screenshot of the Browser](https://raw.githubusercontent.com/Muxelmann/tutorials/docker/hello-world-node/_screenshot.png)
+![A screenshot of the Browser](https://github.com/Muxelmann/tutorials/raw/main/docker/hello-world-node/_screenshot.png)
 
 Der Docker-Container wird wie folgt beendet, sodass der Port 8080 wieder freigegeben wird:
 
@@ -96,7 +96,7 @@ docker run -d --name hello-world-python -p 8080:80 hello-world-python
 
 Der Nun kann die Webseite aufgerufen werden!
 
-![A screenshot of the Browser](https://raw.githubusercontent.com/Muxelmann/tutorials/docker/hello-world-python/_screenshot.png)
+![A screenshot of the Browser](https://github.com/Muxelmann/tutorials/raw/main/docker/hello-world-python/_screenshot.png)
 
 Der Docker-Container wird wie folgt beendet, sodass der Port 8080 wieder freigegeben wird:
 
