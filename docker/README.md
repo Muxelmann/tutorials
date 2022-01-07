@@ -168,12 +168,18 @@ docker run -e VARIABLENNAME=variablenwert <docker-image>
 
 In einem Container können Daten gespeichert werden, die aber gelöscht werden, sobald der Container gelöscht oder ein neues Image benutzt wird. Um dies zu vermeiden, kann man ein Volume benutzen, das nichts anderes als einen Pfad im Container ist. Dieses Volume wird dann standardmäßig unter `/var/docker/volumes` auf dem Host gespeichert; und zwar in dem Ordner mit der UID des Containers.
 
-Will man nicht immer einen neuen Ordner für jeden neuen Container erzeugen, und stattdessen immer denselben Ordner benutzen, kann das Volume auch mit einem konkreten Ordner des Hosts verbinden.
-
-Wird z.B. im Container unter dem Pfad `/var/www/html` eine Webseite gespeichert, so kann dieser Pfad im *Dockerfile* (siehe unten) als Volume gekennzeichnet werden. Dann besteht auch die Möglichkeit mit der Option `-v` diesen Pfad auf dem Host als Volume Ordner bereitzustellen:
+Will man dem Volume einen bestimmten Namen zuweisen, geschieht das mit der Option `-v`:
 
 ```bash
-docker run -v <host-folder>:/var/www/html <image-name>
+docker run -v <volume-name>:/var/www/html <image-name>
+```
+
+Das Volume wird jedoch weiter in `/var/docker/volumes` gespeichert, jedoch nicht mit jedem neuen Container überschrieben.
+
+Will man jedoch einen anderen Pfad angeben, in dem der Ordner des Volume angelegt werden soll, kann man einen absoluten Pfad statt eines Namens übergeben. Wird z.B. im Container unter dem Pfad `/var/www/html` eine Webseite gespeichert, so kann dieser Pfad im *Dockerfile* (siehe unten) als Volume gekennzeichnet werden. Dann besteht auch die Möglichkeit mit der Option `-v` diesen Pfad auf dem Host als Volume Ordner bereitzustellen:
+
+```bash
+docker run -v /path/on/host/to/volume:/var/www/html <image-name>
 ```
 
 Dann kann man auch einen Container aktualisieren, ohne Datenverlust! Z.B.:
@@ -274,9 +280,9 @@ docker stop mariadb-test phpmyadmin-test wordpress-test
 docker rm mariadb-test phpmyadmin-test wordpress-test
 
 # Images aktualisieren
-docker pull mariadb # ggf. arm64v8/mariadb
+docker pull mariadb               # ggf. arm64v8/mariadb
 docker pull phpmyadmin/phpmyadmin # ggf. arm64v8/phpmyadmin
-docker pull wordpress # ggf. arm64v8/wordpress
+docker pull wordpress             # ggf. arm64v8/wordpress
 
 # Container starten ohne die DB neu zu konfigurieren
 docker run \
@@ -320,6 +326,68 @@ Container können mit `docker stop` angehalten werden. Hierbei kann die ID oder 
 
 Mit `docker rm` können dann angehaltene Container gelöscht werden. Läuft der Container noch, so kann er mit `-f` (*force*) zwangsweise (beendet und) gelöscht werden.
 
-Hat man einen benutzerdefinierten Ordner einem Volume des Containers zugewiesen, so muss man diesen Ordner selber löschen (z.B. mit `rm -rf` unter Linux).
+Sind alle Container eines bestimmten Images beendet, so kann man auch das Image selbst löschen; und zwar mit `docker image rm`. Dann muss jedoch beim nächsten Mal das Image vollständig erneut heruntergeladen werden.
+
+Ebenso kann man Volumen mit `docker volume rm` löschen. Hat man jedoch einen benutzerdefinierten Ordner einem Volume des Containers zugewiesen, so muss man diesen Ordner selber löschen (z.B. mit `rm -rf` unter Linux).
+
+Will man nun die drei vorstehend gestarteten Container, deren Volumen und das dazugehörige Netzwerk aufräumen, sähe der Befehl hierfür wie folgt aus:
+
+```bash
+# Alte Container anhalten und löschen
+docker stop mariadb-test phpmyadmin-test wordpress-test
+docker rm mariadb-test phpmyadmin-test wordpress-test
+
+# Die Volumen löschen
+docker rm maria-mysql
+docker rm wp-content
+
+# Das Netzwerk löschen:
+docker network rm my-test-network
+
+# Die zu Grunde liegenden Images löschen
+docker image rm mariadb wordpress phpmyadmin/phpmyadmin
+# ggf. docker image rm arm64v8/mariadb arm64v8/wordpress arm64v8/phpmyadmin
+```
+
+Will man alle Container löschen so macht man dies wie folgt:
+
+```bash
+docker rm $(docker ps -aq)
+```
+
+Will man jedoch nur Container, die von einem bestimmten Image abhängig sind löschen, geschieht dies z.B. wie folgt:
+
+```bash
+docker rm $(docker ps -a -q -f ancestor=ubuntu)
+```
+
+Um alle verwaisten Volumes zu löschen gibt es den `prune` Befehl:
+
+```bash
+docker volume prune
+```
+
+Will man alle nicht verwendeten Container und deren Volume löschen, geht das mit dem folgenden Befehl:
+
+```bash
+docker system prune -a --volumes
+```
+
+### Verwaltung
+
+Der Platzbedarf eines Images und Containers kann wie folgt eingesehen werden:
+
+```bash
+docker images
+docker ps -a -s
+```
+
+wobei die Option `-s` den Platzbedarf der Container der zurückgegebene Tabelle hinzufügt.
+
+Einen Überblick über Docker als solches gibt es mit dem folgenden Befehl:
+
+```bash
+docker system df
+```
 
 ## Dockerfile
