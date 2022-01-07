@@ -182,6 +182,12 @@ Will man jedoch einen anderen Pfad angeben, in dem der Ordner des Volume angeleg
 docker run -v /path/on/host/to/volume:/var/www/html <image-name>
 ```
 
+Bei Fedora und RHEL muss zusätzlich die Flag `:z` übergeben werden, also:
+
+```bash
+docker run -v /path/on/host/to/volume:/var/www/html:z <image-name>
+```
+
 Dann kann man auch einen Container aktualisieren, ohne Datenverlust! Z.B.:
 
 ```bash
@@ -391,3 +397,69 @@ docker system df
 ```
 
 ## Dockerfile
+
+Die Datei *Dockerfile* ermöglicht es, benutzerdefinierte Images zu erstellen. Dafür enthält sie eine recht einfache Syntax mit im Nachstehenden erklärten Schlüsselworten, die die Konfiguration des Images ermöglichen. Ist das Dockerfile fertig, kann mit `docker build` daraus ein Image erstellt werden.
+
+### `ADD` und `COPY`
+
+...kopieren Dateien in das Dateisystem des Images. Das Schlüsselwort `ADD` akzeptiert zudem nicht nur eine Datei, sondern auch eine URL, ein Verzeichnis oder eine Archivdatei (die sogar entpackt im Image gespeichert wird).
+
+###  `CMD` und `ENTRYPOINT`
+
+...führen den angegebenen Befehl beim Start des Containers aus.
+
+Wird mit `docker run` ein Befehl übergeben, ersetzt dieser den mit `CMD` angegebenen Befehl. Der übergebene Befehl wird dem von `ENTRYPOINT` hinzugefügt, sodass der von `ENTRYPOINT` angegebene Befehl immer beim Start des Containers ausgeführt wird.
+
+Für die Schlüsselworte wird der absolute Dateiname des Befehls, sowie seine Parameter jeweils in doppelte Anführungszeichen gestellt und durch Kommata getrennte eckige Klammern übergeben; z.B.:
+
+```
+CMD ["/etc/start.sh", "param1", "param2"]
+```
+
+###  `ENV`
+
+...setzt eine Umgebungsvariable.
+
+###  `EXPOSE`
+
+...gibt die aktiven Ports des Containers an.
+
+###  `FROM`
+
+...gibt das Image an, auf dem das mit `docker build` erzeugte Image beruht.
+
+### `LABEL`
+
+...legt eine Zeichenkette zum identifizieren des Images fest.
+
+### `RUN`
+
+...führt den angegebenen Befehl beim Erzeugen des Images aus. Hiermit werden in der Regel Befehle zur Installation von Paketen oder Abhängigkeiten übergeben. Mit der Option `-y` können oft störende Ja/Nein-Abfragen vermieden werden, wie z.B. bei `apt`:
+
+```bash
+RUN apt update && \
+  apt upgrade -y && \
+  apt clean && \
+  rm -rf /var/lib/apt/lists/*
+```
+
+Es ist speicherplatzeffizienter möglichst alle Befehle mit dem bedingten Und `&&` in einem Befehl für `RUN` zu kombinieren.
+
+### `USER`
+
+...gibt ein Benutzerkonto für `RUN`, `CMD` und `ENTRYPOINT` an.
+
+### `VOLUME`
+
+...gibt an, welche Verzeichnisse im Image ein Volume sind. Die Syntax ist ähnlich wie bei `CMD` oder `ENTRYPOINT`, nur dass hier alle absoluten Pfade aufgelistet werden, die als Volume zur Verfügung stehen sollen:
+
+```
+VOLUME ["/var/lib/mysql", "/var/log/mysql"]
+```
+
+Diesen Volumen können dann mit der Option `-v` wie vorstehend Beschrieben ein Name zugewiesen werden, oder sie können in einem gesonderten Ordner gespeichert werden.
+
+### `WORKDIR`
+
+...legt das Arbeitsverzeichnis für `RUN`, `CMD`, `COPY` usw. fest.
+
