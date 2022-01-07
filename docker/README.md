@@ -463,3 +463,33 @@ Diesen Volumen können dann mit der Option `-v` wie vorstehend Beschrieben ein N
 
 ...legt das Arbeitsverzeichnis für `RUN`, `CMD`, `COPY` usw. fest.
 
+## Images erzeugen und testen
+
+Mit dem Befehl `docker build` mit einem Dockerfile, wie es vorstehend beschrieben wurde, ein Image erzeugt. Mit der Option `-t` kann man dem Image auch einen Namen hinzufügen, wobei dieser wie folgt aufgebaut sein sollte:
+
+```bash
+docker build -t accountname/imagename
+```
+
+Baut man erzeugt man mehrere Versionen des Images, kann jeder Version auch ein Tag gegeben werden:
+
+```bash
+docker build -t accountname/imagename:tag
+```
+
+oder der Tag kann geändert werden:
+
+```bash
+docker tag accountname/imagename[:oldtag] accountname/imagename:newtag
+```
+
+Standardmäßig wird nämlich immer der letzten erzeugten Version der Tag `:latest` zugewiesen.
+
+Testen kann man dann das erzeugte Image mit `docker run`, jedoch am Besten mit den Optionen `-it` zum Interagieren und mit `--rm` um nach dem Ausführen alles wieder zu löschen, sodass beim nächsten Ausführen keine Dateien des Vorgängers übrig bleiben. Da das Image immer neu erzeugt werden muss, bleiben alte Versionen zurück, die wie folgt gelöscht werden können:
+
+```bash
+docker rm $(docker ps -a -q -f ancestor=accountname/imagename)
+docker rmi $(docker images accountname/imagename -f dangling=true -q)
+```
+
+Hierbei ist `docker rmi` die Kurzform für `docker image rm`.
