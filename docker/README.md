@@ -16,23 +16,23 @@ curl -fsSL https://get.docker.com -o get-docker.sh
 sudo sh get-docker.sh
 ```
 
-Im Nachfolgenden werden alle `docker` Befelhe als *root* ausgeführt - der Wechsel hierzu geht im Terminal mittels `sudo -s`. Alternativ kann man auch ein `sudo` vor jeden `docker` Befehl schreiben, das wird hier jedoch der Überschaubarkeit halber ausgelassen.
+Im Nachfolgenden werden alle `docker` Befehle als *root* ausgeführt - der Wechsel hierzu geht im Terminal mittels `sudo -s`. Alternativ kann man auch ein `sudo` vor jeden `docker` Befehl schreiben, das wird hier jedoch der Überschaubarkeit halber ausgelassen. Zudem wird statt "*Docker-Container*" oder "*Docker-Images*" lediglich auf einen Container bzw. ein Image Bezug genommen, auch wenn es sich eigentlich um Docker-Container und Docker-Images handelt.
 
 ## Hello, World!
 
 ### Apache Server
 
-Im Ordner *hello-world-php* liegen Dateien mit denen Docker einen auf Apache basierenden Webserver erstellen kann. Die Befehle zum Erstellen des Docker-Images und zum Ausführen desselben sind:
+Im Ordner *hello-world-php* liegen Dateien mit denen Docker einen auf Apache basierenden Webserver erstellen kann. Die Befehle zum Erstellen des Images und zum Ausführen desselben sind:
 
 ```bash
 # Wechselt in den entsprechenden Ordner
 cd hello-world-php
 
-# Erzeugt ein neues Docker-Image mit dem Tag (-t) `hello-world-php`
+# Erzeugt ein neues Image mit dem Tag (-t) `hello-world-php`
 docker build -t hello-world-php .
 
-# Führt das erzeugte Docker-Image (letztes Argument) als Dämon (-d) unter dem Namen `hello-world-php` aus.
-# Zudem wird der Port 8080 des Host mit dem Port 80 des Docker-Containers (also dem Server) verbunden.
+# Führt das erzeugte Image (letztes Argument) als Daemon (-d) unter dem Namen `hello-world-php` aus.
+# Zudem wird der Port 8080 des Host mit dem Port 80 des Containers (also dem Server) verbunden.
 docker run -d --name hello-world-php -p 8080:80 hello-world-php
 ```
 
@@ -40,28 +40,28 @@ Der Nun kann die Webseite aufgerufen werden!
 
 ![A screenshot of the Browser](https://github.com/Muxelmann/tutorials/raw/main/docker/hello-world-php/_screenshot.png)
 
-Der Docker-Container wird wie folgt beendet, sodass der Port 8080 wieder freigegeben wird:
+Der Container wird wie folgt beendet, sodass der Port 8080 wieder freigegeben wird:
 
 ```bash
-# Hält den Docker-Container, also den Server an
+# Hält den Container, also den Server an
 docker stop hello-world-php
-# Löscht das erzeugte Docker-Image (optional)
+# Löscht das erzeugte Image (optional)
 docker rm hello-world-php
 ```
 
 ### Node.js
 
-Im Ordner *hello-world-node* liegen Dateien mit denen Docker einen auf Node.js basierenden Webserver erstellen kann. Die Befehle zum Erstellen des Docker-Images und zum Ausführen desselben sind:
+Im Ordner *hello-world-node* liegen Dateien mit denen Docker einen auf Node.js basierenden Webserver erstellen kann. Die Befehle zum Erstellen des Images und zum Ausführen desselben sind:
 
 ```bash
 # Wechselt in den entsprechenden Ordner
 cd hello-world-node
 
-# Erzeugt ein neues Docker-Image mit dem Tag (-t) `hello-world-node`
+# Erzeugt ein neues Image mit dem Tag (-t) `hello-world-node`
 docker build -t hello-world-node .
 
-# Führt das erzeugte Docker-Image (letztes Argument) als Dämon (-d) unter dem Namen `hello-world-node` aus.
-# Zudem wird der Port 8080 des Host mit dem Port 80 des Docker-Containers (also dem Server) verbunden.
+# Führt das erzeugte Image (letztes Argument) als Daemon (-d) unter dem Namen `hello-world-node` aus.
+# Zudem wird der Port 8080 des Host mit dem Port 80 des Containers (also dem Server) verbunden.
 docker run -d --name hello-world-node -p 8080:80 hello-world-node
 ```
 
@@ -69,28 +69,28 @@ Der Nun kann die Webseite aufgerufen werden!
 
 ![A screenshot of the Browser](https://github.com/Muxelmann/tutorials/raw/main/docker/hello-world-node/_screenshot.png)
 
-Der Docker-Container wird wie folgt beendet, sodass der Port 8080 wieder freigegeben wird:
+Der Container wird wie folgt beendet, sodass der Port 8080 wieder freigegeben wird:
 
 ```bash
-# Hält den Docker-Container, also den Server an
+# Hält den Container, also den Server an
 docker stop hello-world-node
-# Löscht das erzeugte Docker-Image (optional)
+# Löscht das erzeugte Image (optional)
 docker rm hello-world-node
 ```
 
 ### Python
 
-Im Ordner *hello-world-python* liegen Dateien mit denen Docker einen auf Python 3 basierenden Webserver erstellen kann. Die Befehle zum Erstellen des Docker-Images und zum Ausführen desselben sind:
+Im Ordner *hello-world-python* liegen Dateien mit denen Docker einen auf Python 3 basierenden Webserver erstellen kann. Die Befehle zum Erstellen des Images und zum Ausführen desselben sind:
 
 ```bash
 # Wechselt in den entsprechenden Ordner
 cd hello-world-python
 
-# Erzeugt ein neues Docker-Image mit dem Tag (-t) `hello-world-python`
+# Erzeugt ein neues Image mit dem Tag (-t) `hello-world-python`
 docker build -t hello-world-python .
 
-# Führt das erzeugte Docker-Image (letztes Argument) als Dämon (-d) unter dem Namen `hello-world-python` aus.
-# Zudem wird der Port 8080 des Host mit dem Port 80 des Docker-Containers (also dem Server) verbunden.
+# Führt das erzeugte Image (letztes Argument) als Daemon (-d) unter dem Namen `hello-world-python` aus.
+# Zudem wird der Port 8080 des Host mit dem Port 80 des Containers (also dem Server) verbunden.
 docker run -d --name hello-world-python -p 8080:80 hello-world-python
 ```
 
@@ -98,11 +98,228 @@ Der Nun kann die Webseite aufgerufen werden!
 
 ![A screenshot of the Browser](https://github.com/Muxelmann/tutorials/raw/main/docker/hello-world-python/_screenshot.png)
 
-Der Docker-Container wird wie folgt beendet, sodass der Port 8080 wieder freigegeben wird:
+Der Container wird wie folgt beendet, sodass der Port 8080 wieder freigegeben wird:
 
 ```bash
-# Hält den Docker-Container, also den Server an
+# Hält den Container, also den Server an
 docker stop hello-world-python
-# Löscht das erzeugte Docker-Image (optional)
+# Löscht das erzeugte Image (optional)
 docker rm hello-world-python
 ```
+
+## Docker Grundlagen
+
+Die grundlegendsten Befehle für Docker lauten wie folgt:
+
+```bash
+# Zum Ausführen eines Images
+docker run <image-name>
+
+# Zum Anzeigen der Statusinformationen; -a zeigt alles an
+docker ps -a
+
+# Um einen laufenden Container anzuhalten
+docker stop <container-name>
+
+# Zum Aufräumen alter Container
+docker rm <container-name>
+
+# Um die neuste Version eines Images herunterzuladen
+docker image pull <image-name>
+```
+
+### Ausführen
+
+Um sich das spätere Aufräumen von in der Vergangenheit ausgeführten Containern zu sparen, kann man sie auch mit der Option `--rm` starten.
+
+Um einen Container (z.B. zum Entwickeln) interaktiv in einer Konsole zu starten, übergibt man die Optionen `-i` und `-t` die als `-it` zusammengefasst werden können. Mit der Option `-i` wird der Container interaktiv ausgeführt und `-t` startet einen Pseudo-Terminalemulator (also Pseudo-TTY) der mit der Standardeingabe verbunden wird.
+
+Beim Start eines Containers wird diesem eine zufällige UID zugewiesen. Einen benutzerdefinierten Namen kann man mit `--name` übergeben und einen Hostnamen mit `-h` zuweisen.
+
+Um weitere Befehle an einen Container zu übermitteln, kann man `docker exec` benutzen. Z.B..
+
+```bash
+# Zum Auflisten aller aktiven Prozesse
+docker exec -it my-ubuntu /usr/bin/top
+```
+
+oder
+
+```bash
+# Um eine weitere Bash-Session zu öffnen
+docker exec -it my-ubuntu /bin/bash
+```
+
+Um einen Container im Hintergrund weiterlaufen zu lassen, kann man ihn mit der Option `-d` als Hintergrundprozess (*daemon*) starten.
+
+Um mit Ports des Containers kommunizieren zu können, benutzt man die Option `-p`, wobei folgendes gilt:
+
+```bash
+docker run -d -p <host-port>:<docker-port> <image-name>
+```
+
+Umgebungsvariablen können mit der Option `-e` übergeben werden. Hierbei werden die Variablen wie folgt benannt:
+
+```bash
+docker run -e VARIABLENNAME=variablenwert <docker-image>
+```
+
+### Daten Speichern
+
+In einem Container können Daten gespeichert werden, die aber gelöscht werden, sobald der Container gelöscht oder ein neues Image benutzt wird. Um dies zu vermeiden, kann man ein Volume benutzen, das nichts anderes als einen Pfad im Container ist. Dieses Volume wird dann standardmäßig unter `/var/docker/volumes` auf dem Host gespeichert; und zwar in dem Ordner mit der UID des Containers.
+
+Will man nicht immer einen neuen Ordner für jeden neuen Container erzeugen, und stattdessen immer denselben Ordner benutzen, kann das Volume auch mit einem konkreten Ordner des Hosts verbinden.
+
+Wird z.B. im Container unter dem Pfad `/var/www/html` eine Webseite gespeichert, so kann dieser Pfad im *Dockerfile* (siehe unten) als Volume gekennzeichnet werden. Dann besteht auch die Möglichkeit mit der Option `-v` diesen Pfad auf dem Host als Volume Ordner bereitzustellen:
+
+```bash
+docker run -v <host-folder>:/var/www/html <image-name>
+```
+
+Dann kann man auch einen Container aktualisieren, ohne Datenverlust! Z.B.:
+
+```bash
+docker stop my-ubuntu
+docker rm my-ubuntu
+docker pull ubuntu
+docker run -d --name my-ubuntu -v myhome:/home my-ubuntu
+```
+
+Volumes können mit dem Befehl `docker inspect` analysiert werden. Ist man nur an gewissen Einträgen der Analyse interessiert, kann man mit `-f` (*format*) die Ausgabe beschränken:
+
+```bash
+docker inspect -f '{{ .Mounts }}' my-image
+```
+
+Kennt man dann den Namen des Volume, kann man es so analysieren:
+
+```bash
+docker volume inspect <volume-id>
+```
+
+### Logging
+
+Die Fehler- und Ereignisausgaben eines im Hintergrund laufenden Containers können wie folgt eingesehen werden:
+
+```bash
+docker logs <container-name>
+```
+
+### Kommunikation
+
+Um mehrere Container miteinander kommunizieren zu lassen, muss ein Netzwerk erstellt werden:
+
+```bash
+docker network create my-test-network
+```
+
+Dann können mehrere Container diesem Netzwerk beitreten und miteinander Kommunizieren. So würde z.B. der Code zum Starten eines Webservers aussehen, der auf MariaDB, PHPmyAdmin und Wordpress aufbaut:
+
+```bash
+docker run \
+  -d \
+  --name mariadb-test \
+  --network my-test-network \
+  -e MYSQL_RANDOM_ROOT_PASSWORD=1 \
+  -e MYSQL_DATABASE=wp \
+  -e MYSQL_USER=wpuser \
+  -e MYSQL_PASSWORD=secret \
+  -v maria-mysql:/var/lib/mysql \
+  mariadb # ggf. arm64v8/mariadb
+
+docker run \
+  -d \
+  --name phpmyadmin-test \
+  --network my-test-network \
+  -e PMA_HOST=mariadb-test \
+  -p 8080:80 \
+  phpmyadmin/phpmyadmin # ggf. arm64v8/phpmyadmin
+  
+docker run \
+  -d \
+  --name wordpress-test \
+  --network my-test-network \
+  -h wordpress-test \
+  -e WORDPRESS_DB_HOST=mariadb-test \
+  -e WORDPRESS_DB_USER=wpuser \
+  -e WORDPRESS_DB_NAME=wp \
+  -e WORDPRESS_DB_PASSWORD=secret \
+  -v wp-content:/var/www/html/wb-content \
+  -p 8081:80 \
+  wordpress # ggf. arm64v8/wordpress
+```
+
+**Anmerkung** zu Apples M1-Chip und anderen Arm 64bit Platformen: Falls der Container nicht startet oder abstürzt, können folgende Images benutzt werden:
+
+- `arm64v8/mariadb` für MariaDB,
+- `arm64v8/phpmyadmin` für PHPmyAdmin, und
+- `arm64v8/wordpress` für Wordpress.
+
+Jedoch scheint in meinem Test nur das standardmäßig heruntergeladene PHPmyAdmin Image nicht zu funktionieren - MariaDB und Wordpress laufen einwandfrei.
+
+Eine Abfrage über `docker ps` sollte dann folgendes Ergebnis ausgeben:
+
+```
+CONTAINER ID   IMAGE                COMMAND                  CREATED              STATUS              PORTS                                   NAMES
+a13986fdfa63   mariadb              "docker-entrypoint.s…"   About a minute ago   Up 9 minutes        3306/tcp                                mariadb-test
+1c6ca84d0274   wordpress            "docker-entrypoint.s…"   2 minutes ago        Up 3 minutes        0.0.0.0:8081->80/tcp, :::8081->80/tcp   wordpress-test
+94357a819b6d   arm64v8/phpmyadmin   "/docker-entrypoint.…"   7 minutes ago        Up 7 minutes        0.0.0.0:8080->80/tcp, :::8080->80/tcp   phpmyadmin-test
+```
+
+Aktualisieren lassen sich die Container dann **ohne Datenverlust** wie folgt:
+
+```bash
+# Alte Container anhalten und löschen
+docker stop mariadb-test phpmyadmin-test wordpress-test
+docker rm mariadb-test phpmyadmin-test wordpress-test
+
+# Images aktualisieren
+docker pull mariadb # ggf. arm64v8/mariadb
+docker pull phpmyadmin/phpmyadmin # ggf. arm64v8/phpmyadmin
+docker pull wordpress # ggf. arm64v8/wordpress
+
+# Container starten ohne die DB neu zu konfigurieren
+docker run \
+  -d \
+  --name mariadb-test \
+  --network my-test-network \
+  -v maria-mysql:/var/lib/mysql \
+  mariadb # ggf. arm64v8/mariadb
+
+docker run \
+  -d \
+  --name phpmyadmin-test \
+  --network my-test-network \
+  -e PMA_HOST=mariadb-test \
+  -p 8080:80 \
+  phpmyadmin/phpmyadmin # ggf. arm64v8/phpmyadmin
+  
+docker run \
+  -d \
+  --name wordpress-test \
+  --network my-test-network \
+  -h wordpress-test \
+  -e WORDPRESS_DB_HOST=mariadb-test \
+  -e WORDPRESS_DB_USER=wpuser \
+  -e WORDPRESS_DB_NAME=wp \
+  -e WORDPRESS_DB_PASSWORD=secret \
+  -v wp-content:/var/www/html/wb-content \
+  -p 8081:80 \
+  wordpress # ggf. arm64v8/wordpress
+```
+
+PHPmyAdmin und Wordpress können dann über einen Browser wie gewohnt aufgerufen werden:
+
+![A screenshot of the Browser](https://github.com/Muxelmann/tutorials/raw/main/docker/media/test-network-pma.png)
+
+![A screenshot of the Browser](https://github.com/Muxelmann/tutorials/raw/main/docker/media/test-network-wordpress.png)
+
+### Aufräumen
+
+Container können mit `docker stop` angehalten werden. Hierbei kann die ID oder der Name des Containers übergeben werden.
+
+Mit `docker rm` können dann angehaltene Container gelöscht werden. Läuft der Container noch, so kann er mit `-f` (*force*) zwangsweise (beendet und) gelöscht werden.
+
+Hat man einen benutzerdefinierten Ordner einem Volume des Containers zugewiesen, so muss man diesen Ordner selber löschen (z.B. mit `rm -rf` unter Linux).
+
+## Dockerfile
