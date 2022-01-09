@@ -606,15 +606,15 @@ Zusammengefasst könnte eine YAML Datei dann wie folgt aussehen:
 ```yaml
 # Datei sample.yml
 data:
-	list:
-		- item1
-		- item2
-	key1: >
-		Dieser Text ist dem
-		Schlüssel 'data.key1' zugeordnet.
-	key2: |
-		code line 1
-		code line 2
+  list:
+    - item1
+    - item2
+  key1: >
+    Dieser Text ist dem
+    Schlüssel 'data.key1' zugeordnet.
+  key2: |
+    code line 1
+    code line 2
 ```
 
 ### Beispiel für Compose
