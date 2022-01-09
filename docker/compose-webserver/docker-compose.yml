@@ -1,0 +1,41 @@
+# Die Versionsnummer muss für `docker stack deploy` angegeben werden
+# und mindestens Nummer 3 betragen
+version: '3'
+
+# Definiert die Dienste oder Services die mit dieser YAML-Datei
+# erzeugt werden
+services:
+  # Der Datenbank-Service nutzt wieder MariaDB und im
+  # folgenden wird eine Datenbank für Wordpress
+  # eingerichtet und mit einem Volume verbunden
+  db:
+    image: mariadb:latest
+    volumes:
+      - vol-db:/var/lib/mysql
+    environment:
+      MYSQL_RANDOM_ROOT_PASSWORD: 1
+      MYSQL_DATABASE: wp
+      MYSQL_USER: wpuser
+      MYSQL_PASSWORD: secret
+    restart: always
+    
+  # Der Service zur Inhaltsverwaltung ist Wordpress und
+  # wird mit dem Datenbank-Service und einem Volume verbunden
+  wordpress:
+    image: wordpress:latest
+    volumes:
+      - vol-www:/var/www/html/wp-content
+    ports:
+      - "8082:80"
+    environment:
+      WORDPRESS_DB_HOST: db:3306
+      WORDPRESS_DB_USER: wpuser
+      WORDPRESS_DB_NAME: wp
+      WORDPRESS_DB_PASSWORD: secret
+    restart: always
+    
+# Die oben definierten Volume müssen am Ende noch einmal
+# explizit aufgeführt werden, 
+volumes:
+  vol-www:
+  vol-db:

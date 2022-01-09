@@ -568,3 +568,117 @@ Danach sollte die URL `http://localhost:8080/` aufgerufen werden können, sowie 
 ![A screenshot of the Browser](https://github.com/Muxelmann/tutorials/raw/main/docker/media/test-webserver.png)
 
 Mit den vorstehend besprochenen Befehlen `docker stop`, `docker start` und `docker rm` kann dann der erzeugte Container angehalten, wieder gestartet und gelöscht werden. Beim Ausführen kann auch mit der Option `-v` der Webordner unter */var/www/html* sowie der Logordner unter `*/var/log/apache2* einem Volumen zugewiesen werden und von außerhalb des Containers verwaltet werden.
+
+## Docker Compose und Docker Stack
+
+Die Befehle `docker compose` und `docker stack deploy` benutzen eine auf YAML-Syntax basierende Datei namens *docker-compose.yml*, um Container einzurichten.
+
+### Installation
+
+Für die Installation (zur Zeit der Version 2.2.3) muss unter Linux die ausführbare Datei `docker-compose` heruntergeladen und in */usr/local/bin* gespeichert werden. Das geschieht wie folgt:
+
+```bash
+sudo curl -L "https://github.com/docker/compose/releases/download/v2.2.3/docker-compose-$(uname -m)-$(uname -a)" -o docker-compose
+sudo chmod +x docker-compose
+sudo mv docker-compose /usr/local/bin
+```
+
+Danach sollte der Befehl `docker-compose` ausführbar sein. MacOS und Windows stellen den Unterbefehl `docker compose` bereits mit der Installation von Docker zur Verfügung. Daher muss der die Datei `docker-compose` (mit Bindestrich) nicht mehr besorgt werden.
+
+Der Unterbefehl `docker stack` sollte jedoch für jedes Betriebssystem bei Docker mitgeliefert werden, sodass - alternativ zu `docker compose` bzw. `docker-compose` - `docker stack deploy` ausgeführt werden kann.
+
+### YAML
+
+YAML steht für *YAML Ain't Markup Language* und umfasst folgende Regeln:
+
+- `---` leitet einen neuen Abschnitt ein
+- `#` beschreibt die Zeile als Kommentar
+- `"hello, world"` und `'hello, world'` bilden Zeichenketten
+- `-` beschreibt einen Ausdruck in einer Liste
+- `[foo, bar, foobar]` ist eine Alternative zu `-` um eine Liste von Ausdrücken zu beschreiben
+- `key: value` beschreibt eine assoziative Liste
+- `{name: Max Mustermann, age: 30}` ist eine Alternative zur assoziativen Liste
+- `|` ist ein Wert, der einen Textblock beschreibt, bei dem Zeilenumbrüche erhalten bleiben
+- `>` ist ein Wert, der einen Textblock beschriebt, bei dem Zeilenumbrüche nicht (leere Zeilen aber schon) erhalten bleiben
+
+Zusammengefasst könnte eine YAML Datei dann wie folgt aussehen:
+
+```yaml
+# Datei sample.yml
+data:
+	list:
+		- item1
+		- item2
+	key1: >
+		Dieser Text ist dem
+		Schlüssel 'data.key1' zugeordnet.
+	key2: |
+		code line 1
+		code line 2
+```
+
+### Beispiel für Compose
+
+```yaml
+# Die Versionsnummer muss für `docker stack deploy` angegeben werden
+# und mindestens Nummer 3 betragen
+version: '3'
+
+# Definiert die Dienste oder Services die mit dieser YAML-Datei
+# erzeugt werden
+services:
+  # Der Datenbank-Service nutzt wieder MariaDB und im
+  # folgenden wird eine Datenbank für Wordpress
+  # eingerichtet und mit einem Volume verbunden
+  db:
+    image: mariadb:latest
+    volumes:
+      - vol-db:/var/lib/mysql
+    environment:
+      MYSQL_RANDOM_ROOT_PASSWORD: 1
+      MYSQL_DATABASE: wp
+      MYSQL_USER: wpuser
+      MYSQL_PASSWORD: secret
+    restart: always
+    
+  # Der Service zur Inhaltsverwaltung ist Wordpress und
+  # wird mit dem Datenbank-Service und einem Volume verbunden
+  wordpress:
+    image: wordpress:latest
+    volumes:
+      - vol-www:/var/www/html/wp-content
+    ports:
+      - "8082:80"
+    environment:
+      WORDPRESS_DB_HOST: db:3306
+      WORDPRESS_DB_USER: wpuser
+      WORDPRESS_DB_NAME: wp
+      WORDPRESS_DB_PASSWORD: secret
+    restart: always
+    
+# Die oben definierten Volume müssen am Ende noch einmal
+# explizit aufgeführt werden, 
+volumes:
+  vol-www:
+  vol-db:
+```
+
+Die Kommunikation zwischen den beiden Services wird durch die richtige Bezeichnung des Servicenamen und unter Angabe der entsprechenden Portnummer sichergestellt. In diesem Beispiel heißt der Datenbank-Service `db` und läuft hinter der standardmäßigen Portnummer 3306. Der Wordpress-Service nutzt dann Namen und Portnummer des Datenbank-Service als Wert des Schlüssels `WORDPRESS_DB_HOST`, der dann einfach `db:3306` ist.
+
+Erzeugt und ausgeführt werden dann zwei Container mit dem folgenden Befehl:
+
+```bash
+docker compose up -d
+```
+
+Eine Statusabfrage mit `docker ps` zeigt dann folgende Ausgabe:
+
+```
+CONTAINER ID   IMAGE              COMMAND                  CREATED          STATUS          PORTS                                   NAMES
+f339775118b0   wordpress:latest   "docker-entrypoint.s…"   17 seconds ago   Up 17 seconds   0.0.0.0:8082->80/tcp, :::8082->80/tcp   compose-webserver-wordpress-1
+7dd71b92fc2b   mariadb:latest     "docker-entrypoint.s…"   17 seconds ago   Up 17 seconds   3306/tcp                                compose-webserver-db-1
+```
+
+Und über den Browser sollte nun die Webseite aufgerufen werden können:
+
+![A screenshot of the Browser](https://github.com/Muxelmann/tutorials/raw/main/docker/media/compose-website.png)
