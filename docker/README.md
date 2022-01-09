@@ -571,7 +571,7 @@ Mit den vorstehend besprochenen Befehlen `docker stop`, `docker start` und `dock
 
 ## Docker Compose und Docker Stack
 
-Die Befehle `docker compose` und `docker stack deploy` benutzen eine auf YAML-Syntax basierende Datei namens *docker-compose.yml*, um Container einzurichten.
+Die Befehle `docker compose` und `docker stack deploy` benutzen eine auf YAML-Syntax basierende Datei namens *docker-compose.yml*, um mehrere Container einzurichten. Diese Container werden im folgenden auch *Service* genannt (sie werden nämlich auch unter dem so benannten Schlüsselwort in der YAML-Datei definiert).
 
 ### Installation
 
@@ -617,12 +617,176 @@ data:
     code line 2
 ```
 
+### Die Datei *docker-compose.yml*
+
+Die Datei umfasst mehrere Schlüsselwörter, die wie vorstehend beschrieben benutzt werden. Hierbei ist die Grundstruktur der Datei wie folgt:
+
+```yaml
+version: "3"
+
+services:
+  servicename1:
+    key1: property1
+    key2: property2
+    ...
+  servicename2:
+    key1: property1
+    key2: property2
+    ...
+```
+
+Die Top-Level-Abschnitte *version* und *services* sind zwingend nötig um die Version der YAML-Datei und die Services zu definieren. Weitere Top-Level-Abschnitte wie *volumes*, *networks* oder *secrets* können dann bei Bedarf hinzugefügt werden. Diese sind häufig mit gleichnamigen Schlüsselworten innerhalb eines Services verbunden.
+
+Das Schlüsselwort *image* gibt an, welches Basis-Image für einen Service benutzt werden soll; z.B. `image: ubuntu: 22.04`. Anstelle eines Images kann auch ein Pfad zu einem Verzeichnis angeben, in dem sich die Datei *Dockerfile* befindet. Der Befehl `docker compose` berücksichtigt dann die Angaben in dieser Datei, erstellt ein entsprechendes Image und verwendet dieses als Basis-Image für den Service. Ist die Datei *Dockerfile* im selben Ordner wie die YAML-Datei *docker-compose.yml* gespeichert, reicht an dieser Stelle ein einfacher Punkt `.`.
+
+Standardmäßig sind alle Services dem selben Netzwerk zugewiesen. Man kann jedoch eigene und mehrere Netzwerke definieren, die dann den Services gezielt zugewiesen werden. In diesem Fall muss man die Netzwerke auch in dem Top-Level-Abschnitt *networks* angeben:
+
+```yaml
+...
+services:
+  web:
+    ...
+    networks:
+      - my-test-network
+
+networks:
+  my-test-network:
+    external:
+      name: host
+```
+Das Schlüsselwort *ports* legt eine Liste von Netzwerkports fest und wie sie dem Host zur Verfügung gestellt werden. Hierbei ist wieder die Reihenfolge `hostport:serviceport`:
+
+```yaml
+...
+ports:
+  - "8080:80"
+  - "8443:443"
+```
+
+Möchte man die Ports aber nur innerhalb des Netzwerks freigeben, das `docker compose` bzw. `docker stack deploy` für die Container bzw. die Services erstellt hat, benutzt man anstelle des Schlüsselworts *ports* das Schlüsselwort *expose*:
+
+```yaml
+expose:
+  - "5500"
+  - "5001"
+```
+
+Das Schlüsselwort *volumes* definiert eine Liste von Volumen, die von den Containern bzw. den Services benutzt werden. Hierbei kann man den Volumen Pfade zuweisen, unter denen sie auf dem Host gespeichert werden sollen. Für MairaDB, das die Datenbank unter */var/lib/mysql* speichert, ginge dies z.B. wie folgt:
+
+```yaml
+...
+volumes:
+  - /data/db:/var/lib/mysql
+```
+
+Der Pfad auf dem Host muss nicht zwingend als absoluter Pfad angegeben werden und darf auch relativ, also mit einem Punkt `.` beginnend, sein. In diesem Fall wir der Pfad relativ zur Datei *docker-compose.yml* ausgewertet. Will man vom Home-Verzeichnis ausgehen, benutzt man `~/` statt `./`.
+
+In der Definition der Services können einem Volumen auch ein Name zugewiesen werden. Er muss dann auch unter dem Top-Level-Abschnitt *volumes* aufgeführt werden, benötigt aber keine weiteren Eigenschaften. Docker kümmert sich darum, die Volumen einzurichten und speichert es dann unter */var/lib/docker/volumes*.
+
+```yaml
+...
+services:
+  nginx:
+    volumes:
+      - webdata:/var/www/html
+    ...
+    
+  db:
+    volumes:
+      - dbdata:/var/lib/mysql
+
+volumes:
+  webdata:
+  dbdata:
+```
+
+Das Schlüsselwort *environment* erlaubt das Setzen verschiedener Umgebungsvariablen. Hierbei können entweder Werte als Key-Value-Pair übergeben werden, oder als Listenelemente in dem Format `var=wert`:
+
+```yaml
+...
+environment:
+  WORDPRESS_DB_HOST: mariadb
+  WORDPRESS_DB_NAME: wb
+```
+
+```yaml
+...
+environment:
+  - WORDPRESS_DB_HOST=mariadb
+  - WORDPRESS_DB_NAME=wb
+```
+
+Beide Vorgehensweisen sind gleichwertig. Sollen mehrere Umgebungsvariablen gesetzt werden, funktioniert dies unter Angabe einer Datei, die die Umgebungsvariablen enthält; also mit `env_file: dateiname`.
+
+Die Schlüsselworte *entrypoint* und *command* erlauben es, das Image eines Services mit vom Standard abweichenden Befehlen zu starten. Hierbei müssen die neuen Befehle als Liste oder wie vorstehend beschrieben in eckigen Klammern übergeben werden:
+
+```yaml
+...
+entrypoint: ["new-script.sh"]
+command: ["php", "-a"]
+```
+
+```yaml
+...
+entrypoint:
+  - "new-script.sh"
+command:
+  - "php"
+  - "-a"
+```
+
+Beide Vorgehensweisen sind gleichwertig.
+
+Das Schlüsselwort *restart* kann bei `docker compose` bestimmt werden, ob die Container bei einem Computerstart oder einem Fehler automatisch neu gestartet werden sollen. Das Standardverhalten lautet `no`; andere sind `always`, `on-failure` oder `unless-stopped`. Oft wir hierbei das Neustartverhalten wie folgt gesetzt:
+
+```yaml
+...
+restart: always
+```
+
+Das Schlüsselwort *deploy* steuert, wie Container bzw. Services durch `docker stack deploy` eingerichtet werden und gelten nur für den Schwarmmodus; sie werden von `docker compose` ignoriert. Hierfür muss mindestens YAML-Version 3.1 definiert werden:
+
+```yaml
+version: "3.1"
+
+services:
+  nginx:
+    image: nginx:alpine
+    
+    # Dies wird nur im Schwarmmodus berücksichtigt
+    deploy:
+    
+      # Gibt an, wo der Service ausgeführt wird
+      placement:
+        # Hier wird einfach der Hostname verglichen
+        - node.hostname == "host-number-1"
+      
+      # Gibt an, wie viele Instanzen ausgeführt werden sollen
+      replicas: 5
+      
+      # Gibt Beschränkungen der Ressourcen an
+      resources:
+        # Beschränkt die maximale CPU-Last und die Obergrenze der Speichernutzung
+        limits:
+          cpus:  "0.25"
+          memory: 50M
+          
+      # Gibt an, wann und wie der Service neu gestartet werden soll
+      restart_policy:
+        # Hier kommen `any|on-failure|none` in Betracht
+        condition: on-failure
+        # Standardmäßig wir keine Verzögerung, also 0, eingestellt
+        delay: 2s
+        # Standardmäßig gibt es keine Obergrenze
+        max_attempts: 3
+```
+
 ### Beispiel für Compose
 
 ```yaml
 # Die Versionsnummer muss für `docker stack deploy` angegeben werden
 # und mindestens Nummer 3 betragen
-version: '3'
+version: "3"
 
 # Definiert die Dienste oder Services die mit dieser YAML-Datei
 # erzeugt werden
@@ -682,3 +846,100 @@ f339775118b0   wordpress:latest   "docker-entrypoint.s…"   17 seconds ago   Up
 Und über den Browser sollte nun die Webseite aufgerufen werden können:
 
 ![A screenshot of the Browser](https://github.com/Muxelmann/tutorials/raw/main/docker/media/compose-website.png)
+
+Angehalten, wieder gestartet und gelöscht werden die Container dann mit den entsprechenden für `docker compose` bzw. `docker-compose`:
+
+```bash
+# Zum Anhalten aller Container bzw. Service
+docker compose stop
+# Zum wieder Starten aller Container bzw. Services
+docker compose start
+# Zum löschen aller Container bzw. Services
+docker compose rm
+
+# Hiermit werden alle Container bzw. Services sowohl angehalten als auch gelöscht
+docker compose down
+```
+
+Die erzeugten Volumen müssen gesondert aufgeräumt werden:
+
+```bash
+docker volume rm compose-webserver_vol-www compose-webserver_vol-db
+```
+
+### Beispiel für Stack
+
+Um mit `docker stack` arbeiten zu können, muss ein *Swarm* erzeugt werden. Hierfür muss nicht zwangsläufig ein ganzer Computerverbund aufgesetzt werden, sondern der Swarm kann auch mit dem Befehl `docker swarm init` erzeugt werden. Der dadurch erzeugte Swarm umfasst aber nur einen Computer, was aber für die Nutzung von `docker stack` vollkommen ausreicht. Die Datei *docker-compose.yml* wird dann wie folgt benutzt:
+
+```bash
+docker stack deploy -c docker-compose.yml testwebserver
+```
+
+Die Option `-c` legt die YAML-Datei fest, die eingelesen werden soll und das letzte Argument definiert den Namen des Setups bzw. des Stacks. Als Ausgabe erscheint dann:
+
+```
+Creating network testwebserver_default
+Creating service testwebserver_db
+Creating service testwebserver_wordpress
+```
+
+Der Befehl `docker stack ls` beweist dann, dass der Stack mit zwei Services erstellt wurde. Die Services können dann mit `docker service ls` angezeigt werden. Wird in der Spalte *REPLICAS* angezeigt, dass kein Service gestartet wurde (also *0/1* o.ä.) kann die Fehlerursache mit `docker service ps <sid/stackname>` gesucht werden. Mit der Option `--no-trunc` wird dann eine ausführlichere Ausgabe wiedergegeben:
+
+```
+docker service ps testwebserver_db --no-trunc
+docker service ps testwebserver_wordpress --no-trunc
+```
+
+Angehalten und gelöscht werden kann ein Stack dann wie folgt:
+
+```bash
+docker stack rm testwebserver
+```
+
+Die in *docker-compose.yml* angegebenen Volumen bleiben dabei erhalten, sodass der Stack auch später wieder ohne Datenverlust gestartet werden kann. Braucht man die Daten nicht mehr, können sie wie vorstehend besprochen mit `docker volume rm` gelöscht werden.
+
+### Debugging mit Compose
+
+Um die in der *docker-compose.yml* definierten Service nicht als Hintergrundprozesse auszuführen, kann man die Option `-d` einfach weglassen. Somit werden sämtliche Logging-Ausgaben aller Container angezeigt. Man kann dan mitverfolgen, was in den Containern ausgeführt wird.
+
+Alternativ kann man sich eine Liste laufender Container mit `docker ps` anzeigen lassen und dann mit dem Befehl `docker logs <cname>` die Logging-Ausgaben anzeigen lassen. Der Befehl `docker compose logs` zeigt das kombinierte Log aller Container der Gruppe. Man kann dann auch - wie vorstehend beschrieben - einem Container der als Hintergrundprozess läuft interaktiv beitreten, und dort dann eine Shell starten - z.B.:
+
+```bash
+docker exec -it testwebserver_wordpress_1 /bin/sh
+```
+
+### Passwörter und andere Geheimnisse
+
+Um Passwörter (wie in den vorstehenden Beispielen) nicht als Umgebungsvariable im Klartext übergeben zu müssen, stellt `docker compose` das Schlüsselwort *secrets* zur Verfügung. Dieses Schlüsselwort muss dann im Service selbst und im Top-Level-Abschnitt der Datei *docker-compose.yml* angegeben werden. Die Mindestversion von YAML beträgt hierbei wieder 3.1.
+
+Im folgenden Beispiel wird in der Datei *my-secrets.txt* die Zeichenkette "*Dieser Text ist unglaublich geheim...*" gespeichert und das Folgende in der Datei *docker-compose.yml* definiert:
+
+```yaml
+version: "3.1"
+
+services:
+  test:
+    image: alpine
+    
+    # Definiert ein Geheimnis namens `password1`
+    secrets:
+      - password1
+    # Dieses Geheimnis wird in der gleichnamigen Datei in `/run/secrets` gespeichert
+    command: ["cat", "-n", "/run/secrets/password1"]
+
+# Zudem müssen die Geheimnisse mit Inhalt gefüllt werden
+secrets:
+  # Für `password1` wird der Inhalt der Datei `my-secrets.txt` benutzt
+  password1:
+    file: ./my-secrets.txt
+```
+
+Führt man nun den Befehl `docker compose up` (bzw. `docker-compose up`) aus, erhält man die folgende Ausgabe:
+
+```
+[+] Running 1/0
+ ⠿ Container build-simple-secrets-test-1  Recreated                            0.0s
+Attaching to build-simple-secrets-test-1
+build-simple-secrets-test-1  |      1	Dieser Text ist unglaublich geheim...
+build-simple-secrets-test-1 exited with code 0
+```
