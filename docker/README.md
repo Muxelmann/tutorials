@@ -943,3 +943,61 @@ Attaching to build-simple-secrets-test-1
 build-simple-secrets-test-1  |      1	Dieser Text ist unglaublich geheim...
 build-simple-secrets-test-1 exited with code 0
 ```
+
+Anstatt das Passwort in der Befehlseingabe auszugeben, kann man es auch an Umgebungsvariablen übergeben, wie im nächsten Beispiel veranschaulicht.
+
+Im folgenden Beispiel wird wieder 
+
+```yaml
+version: "3.1"
+
+services:
+  # 1. Service: MariaDB
+  db:
+    image: mariadb:latest
+    volumes:
+      - vol-db:/var/lib/mysql
+    environment:
+      # Hier wird das Administratorpasswort angegeben
+      MYSQL_ROOT_PASSWORD_FILE: /run/secrets/mysql_root
+      MYSQL_DATABASE: wp
+      MYSQL_USER: wpuser
+      # Hier wird das Benutzerpasswort angegeben
+      MYSQL_PASSWORD_FILE: /run/secrets/mysql_user
+    # Für beide Passwörter müssen noch die entsprechenden
+    # Geheimnisse angegeben werden, die später gesetzt werden
+    secrets:
+      - mysql_root
+      - mysql_user
+    restart: always
+    
+  # 2. Service: Wordpress
+  wordpress:
+    image: wordpress:latest
+    volumes:
+      - vol-www:/var/www/html/wp-content
+    ports:
+      - "8082:80"
+    environment:
+      WORDPRESS_DB_HOST: db:3306
+      WORDPRESS_DB_USER: wpuser
+      WORDPRESS_DB_NAME: wp
+      # Hier wird dasselbe Benutzerpasswort übergeben wie oben
+      WORDPRESS_DB_PASSWORD_FILE: /run/secrets/mysql_user
+    # Auch hier muss das entsprechende Geheimnis angegeben werden
+    secrets:
+      - mysql_user
+    restart: always
+
+volumes:
+  vol-www:
+  vol-db:
+
+# Die oben benutzten Geheimnisse müssen hier gesetzt werden,
+# wofür ihnen einfach Textdateien zugeordnet werden
+secrets:
+  mysql_root:
+    file: ./mysql-root-pw.txt
+  mysql_user:
+    file: ./mysql-user-pw.txt
+```
