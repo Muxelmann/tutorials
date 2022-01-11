@@ -1,0 +1,111 @@
+#!/bin/bash
+
+# Define the help function
+help() {
+    echo "The pandocer script helps convert Markdown to LaTeX formated PDFs."
+    echo "By setting a style option, you can determine how the PDF will look."
+    echo ""
+    echo "Usage: pandocer [options] [citations.bib] input.md"
+    echo ""
+    echo "Options:"
+    echo "-h        Print this help."
+    echo "-s style  Specifies the style of the PDF."
+    echo ""
+}
+
+# Test if any arguments/options have been passed and output help if not
+if [ ! $1 ]; then
+    help
+    exit
+fi
+
+# Get all options
+while getopts ":hs:" option; do
+    case $option in
+        h) # display help message
+            help
+            shift
+            exit;;
+        s) # select style
+            STYLE=$OPTARG
+            shift
+            shift;;
+        \?) # invalid option
+            echo "Error: invalid option."
+            exit;;
+    esac
+done
+
+# Checks if an input file is available
+if [ ! $1 ]; then
+    echo "Error: no input file found."
+    exit
+fi
+
+# Sets a formatting style
+case $STYLE in
+    ieee)
+        TEMPLATE="--template=/src/IEEEtran.latex"
+        ;;
+    *)
+        TEMPLATE=""
+        ;;
+esac
+
+# Obtais the 1st input file and extracts file extension
+IN=$1
+EXT="${IN##*.}"
+FILE=$(basename "$IN" .$EXT)
+
+# If the file is a bibliography, set its style
+if [ $EXT == 'bib' -o $EXT == "BIB" ]; then
+    case $STYLE in
+        ieee)
+            BIB_STYLE="IEEEtran.csl"
+            ;;
+        harvard)
+            BIB_STYLE="harvard.csl"
+            ;;
+        *)
+            BIB_STYLE="bibtex.csl"
+            ;;
+    esac
+    BIB="--filter=pandoc-citeproc --csl=/src/$BIB_STYLE --bibliography=$IN"
+    # shift # not necessary if using $2 instead of $1 below
+
+    # Checks if a 2nd input file is available
+    if [ ! $2 ]; then
+        echo "Error: no input file found."
+        exit
+    fi
+    # Obtais again 2nd input file and extracts file extension
+    IN=$2
+    EXT="${IN##*.}"
+    FILE=$(basename "$IN" .$EXT)
+else
+    BIB=""
+fi
+
+# Stop if (last) input file is not of markdown format
+if [ $EXT != 'md' -a $EXT != 'MD' ]; then
+    echo "Inputted file is not a markdown file"
+    exit
+fi
+
+# Define the output file
+OUT="$FILE.pdf"
+
+# Set a default style if not specified
+if [ ! $STYLE ]; then
+    STYLE="(default)"
+fi
+
+# Run the conversion
+echo "Converting $IN using $STYLE to $OUT"
+pandoc \
+    --from=markdown \
+    --to=latex \
+    --output=$OUT \
+    $TEMPLATE \
+    $BIB \
+    $IN
