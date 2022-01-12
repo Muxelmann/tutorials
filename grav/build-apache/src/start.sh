@@ -7,9 +7,6 @@ shopt -s dotglob nullglob
 if [ ! -d $USER_DIR ]; then
     echo "Error: no user directory found"
 
-# elif [ "$(ls $HTML_DIR | wc -l)" = "1" ]; then
-#     ./install-grav.sh
-
 elif [ ! "$(ls -A $USER_DIR)" ]; then
     ./setup-user.sh
 

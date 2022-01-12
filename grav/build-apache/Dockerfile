@@ -14,9 +14,6 @@ ENV TZ="Europe/Berlin" \
 
 ADD src/* /tmp
 
-# TODO: init.sh can copy server data, but not user data because volume!
-#       make 2nd script that launches as entrypoint and loads user if dir is empty
-
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && \
     echo $TZ > /etc/timezone && \
     chmod +x /tmp/*.sh && \
