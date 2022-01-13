@@ -4,6 +4,8 @@ shopt -s dotglob nullglob
 # Check if user directory exists and
 # if it does reset if empty
 
+apache2
+
 if [ ! -d $USER_DIR ]; then
     echo "Error: no user directory found"
 
