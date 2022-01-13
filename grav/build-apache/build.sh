@@ -6,6 +6,7 @@ docker run \
     -it \
     --name grav \
     -p 8080:80 \
+    -p 8443:443 \
     -v ${PWD}/log:/var/log/apache2 \
     -v ${PWD}/user:/var/www/html/user \
     grav $1
