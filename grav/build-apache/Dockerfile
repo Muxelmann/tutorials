@@ -6,6 +6,9 @@ LABEL description "Ein Test-Webserver"
 ENV TZ="Europe/Berlin" \
     APACHE_RUN_USER=www-data \
     APACHE_RUN_GROUP=www-data \
+    APACHE_PID_FILE=/var/run/apache2/apache2.pid \
+    APACHE_RUN_DIR=/var/run/apache2 \
+    APACHE_LOCK_DIR=/var/lock/apache2 \
     APACHE_LOG_DIR=/var/log/apache2 \
     GRAV_VERSION=latest \
     GRAV_ADMIN=YES \
@@ -33,9 +36,12 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && \
         && \
     apt clean -y && \
     rm -rf /var/cache/apt /var/lib/apt/lists/* && \
-    a2ensite default-ssl && \
-    a2enmod ssl rewrite && \
+    rm -rf /etc/apache2/sites-available/* && \
     mv /tmp/apache2.conf /etc/apache2/ && \
+    mv /tmp/default.conf /etc/apache2/sites-available/ && \
+    a2dissite 000-default.conf && \
+    a2ensite default && \
+    a2enmod ssl rewrite && \
     rm -rf /var/www/html/* && \
     cd /tmp && ./install-grav.sh
 
@@ -47,4 +53,4 @@ WORKDIR /tmp
 
 ENTRYPOINT [ "/tmp/start.sh" ]
 
-CMD [ "/usr/sbin/apache2ctl", "-D", "FOREGROUND" ]
+CMD [ "/bin/bash" ]
