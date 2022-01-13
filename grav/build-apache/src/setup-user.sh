@@ -28,6 +28,6 @@ echo "Copying default user files"
 mv $GRAV_ROOT/user/* $USER_DIR
 
 echo "Amending privileges"
-chown www-data:www-data -R $USER_DIR
+chown $APACHE_RUN_USER:$APACHE_RUN_GROUP -R $USER_DIR
 
 rm -rf $GRAV_ROOT*

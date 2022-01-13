@@ -22,6 +22,6 @@ echo "Copying new HTML files"
 cp -RT $GRAV_ROOT/ $HTML_DIR/
 
 echo "Amending privileges"
-chown www-data:www-data -R $HTML_DIR
+chown $APACHE_RUN_USER:$APACHE_RUN_GROUP -R $HTML_DIR
 
 rm -rf $GRAV_ROOT*
