@@ -1,6 +1,7 @@
 FROM ubuntu:22.04
 
 ARG install_admin=NO
+ARG version=1.7.27.1
 
 LABEL maintainer "user@email.com"
 LABEL description "Ein Test-Webserver"
@@ -12,7 +13,7 @@ ENV TZ="Europe/Berlin" \
     APACHE_RUN_DIR=/var/run/apache2 \
     APACHE_LOCK_DIR=/var/lock/apache2 \
     APACHE_LOG_DIR=/var/log/apache2 \
-    GRAV_VERSION=latest \
+    GRAV_VERSION=$version \
     GRAV_ADMIN=$install_admin \
     HTML_DIR=/var/www/html \
     USER_DIR=/var/www/html/user
