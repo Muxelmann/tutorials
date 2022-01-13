@@ -1,14 +1,14 @@
 #!/bin/zsh
-docker build -t grav .
+tag=muxelmann/apache-grav
+docker build -t $tag .
+docker push $tag
 
-docker run \
-    --rm \
-    -it \
-    --name grav \
-    -p 8080:80 \
-    -p 8443:443 \
-    -v ${PWD}/log:/var/log/apache2 \
-    -v ${PWD}/user:/var/www/html/user \
-    grav $1
-    # -e GRAV_VERSION=1.7.26.1 \
-    # -e GRAV_ADMIN=YES \
+# docker run \
+#     --rm \
+#     -it \
+#     --name grav \
+#     -p 8080:80 \
+#     -p 8443:443 \
+#     -v ${PWD}/log:/var/log/apache2 \
+#     -v ${PWD}/user:/var/www/html/user \
+#     $tag $1
