@@ -1,6 +1,6 @@
 FROM ubuntu:22.04
 
-ARG install_admin=YES
+ARG install_admin=NO
 
 LABEL maintainer "user@email.com"
 LABEL description "Ein Test-Webserver"
