@@ -1,5 +1,7 @@
 FROM ubuntu:22.04
 
+ARG install_admin=YES
+
 LABEL maintainer "user@email.com"
 LABEL description "Ein Test-Webserver"
 
@@ -10,7 +12,7 @@ ENV TZ="Europe/Berlin" \
     HTML_DIR=/var/www/html \
     USER_DIR=/var/www/html/user \
     GRAV_VERSION=latest \
-    GRAV_ADMIN=YES
+    GRAV_ADMIN=$install_admin
 
 ADD src/* /tmp
 
