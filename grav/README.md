@@ -5,7 +5,7 @@ Grav ist eine einfache dateibasierte Web-Plattform. Hierfür ist keine Installat
 Hier wird meine Entwicklungserfahrungen mit Grav festgehalten. Zudem versuche ich auch meine Kenntnisse mit Docker zu testen und verbessern, indem ich Grav-Images aus entsprechenden Projekten mit *Dockerfile* erstelle. Momentan ist der Entwicklungsstand wie folgt:
 
 - [x] [Grav unter Ubuntu 22.04 mit Apache2 und PHP 8.1](https://github.com/Muxelmann/tutorials/tree/main/grav/build-apache)
-- [ ] Grav unter Ubuntu 22.04 mit nginx und PHP 8.x
+- [x] [Grav unter Ubuntu 22.04 mit nginx und PHP 8.0](https://github.com/Muxelmann/tutorials/tree/main/grav/build-nginx)
 
 ## Dokumentation
 

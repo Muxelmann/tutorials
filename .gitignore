@@ -1,3 +1,5 @@
 .DS_Store
 grav/build-apache/user
 grav/build-apache/log
+grav/build-nginx/user
+grav/build-nginx/log
