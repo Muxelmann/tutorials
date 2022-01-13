@@ -7,6 +7,16 @@ Hier wird meine Entwicklungserfahrungen mit Grav festgehalten. Zudem versuche ic
 - [x] [Grav unter Ubuntu 22.04 mit Apache2 und PHP 8.1](https://github.com/Muxelmann/tutorials/tree/main/grav/build-apache)
 - [x] [Grav unter Ubuntu 22.04 mit nginx und PHP 8.0](https://github.com/Muxelmann/tutorials/tree/main/grav/build-nginx)
 
+Beide Versionen können nun vom Docker Hub heruntergeladen werden:
+
+```bash
+# Für die auf Apache basierende Version
+docker push muxelmann/apache-grav
+
+# Für die auf Nginx basierende Version
+docker push muxelmann/nginx-grav
+```
+
 ## Dokumentation
 
 Die offizielle Dokumentation von Grav (v1.7) wird [hier](https://learn.getgrav.org/17) bereitgestellt.
