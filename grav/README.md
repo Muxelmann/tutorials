@@ -21,6 +21,20 @@ docker push muxelmann/nginx-grav
 
 Die offizielle Dokumentation von Grav (v1.7) wird [hier](https://learn.getgrav.org/17) bereitgestellt.
 
+Sobald Grav (Core oder Admin) installiert ist, kann man die Entwicklertools wie folgt installieren:
+
+```bash
+bin/gpm install devtools
+```
+
+Sodass z.B. ein neues Thema (bzw. *Theme*) erstellt werden kann:
+
+```bash
+bin/plugin devtools new-theme
+```
+
+Somit habe ich z.B. mein Theme namens "Gerfficient" erstellt.
+
 ## Mögliche Erweiterungen
 
 ### [LangSwitcher](https://github.com/getgrav/grav-plugin-langswitcher)
