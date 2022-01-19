@@ -64,3 +64,15 @@ bin/gpm install simplesearch
 ```
 
 Pagination ist ein Grav-Plugin, das es ermöglicht, eine Liste von Beiträgen in einzelne Seiten zu unterteilen.
+
+## Allgemeiner Aufbau
+
+[Quelle](https://learn.getgrav.org/17/content)
+
+## Thema
+
+[Quelle](https://learn.getgrav.org/17/themes)
+
+## Plugin
+
+[Quelle](https://learn.getgrav.org/17/plugins)
