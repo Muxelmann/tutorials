@@ -5,12 +5,16 @@ Um Docker zu installieren, folgt man am besten den Anweisungen auf der [Webseite
 ```bash
 # Zuerst die installierten Pakete aktualisieren
 sudo apt update
-sudo apt upgrade
+sudo apt upgrade -VV
 
 # Ggf. überflüssige oder veraltete Pakete löschen
-sudo apt remove docker docker-engine docker.io containerd runc
+sudo apt remove docker* containerd runc --purge
+sudo apt autoremove
 
-# Dann den Skript herunterladen und ausführen
+# Dann kurz neu starten
+sudo shutdown -r now
+
+# Und zuletzt den Skript herunterladen und ausführen
 sudo apt install curl
 curl -fsSL https://get.docker.com -o get-docker.sh
 sudo sh get-docker.sh
